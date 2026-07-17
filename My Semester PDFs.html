@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Semester PDFs</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 30px 15px;
+        }
+
+        /* --- Common Styles --- */
+        .hidden {
+            display: none !important;
+        }
+
+        .subjects-section {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .subjects-section h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .subjects-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .subject-btn {
+            display: block;
+            padding: 20px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .subject-btn:active {
+            transform: scale(0.97);
+        }
+
+        .subj-blue { background: linear-gradient(135deg, #5A75ED, #C5D1F6); }
+        .subj-orange { background: linear-gradient(135deg, #FF9A00, #F94A23); }
+
+        /* --- Home View Styles --- */
+        .top-section {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            width: 300px;
+            height: 280px;
+            border-radius: 25px;
+            padding: 25px;
+            color: white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-blue { background: linear-gradient(135deg, #5A75ED, #C5D1F6); }
+        .card-orange { 
+            background: linear-gradient(135deg, #FF9A00, #F94A23);
+            border: 4px solid #FFD13B;
+        }
+
+        .badge-transparent {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+            letter-spacing: 1px;
+        }
+
+        .badge-yellow {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: #FFD13B;
+            color: #8C5A00;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .card-content h1 {
+            font-size: 36px;
+            margin: 5px 0;
+            font-weight: 800;
+        }
+
+        .card-content p {
+            font-size: 16px;
+            margin: 0;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-block;
+            text-align: center;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-white { background: white; color: #5A75ED; }
+        .btn-yellow { background: #FFD13B; color: #8C5A00; }
+
+        /* --- Info Card (Description) Styles --- */
+        .info-card {
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 35px 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-top: 6px solid #5A75ED;
+            text-align: center;
+        }
+
+        .info-card h1 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .info-card p {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .highlight-text { color: #FF9A00; font-weight: 700; }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #5A75ED;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* --- Custom Alert/Modal Design (Coming Soon Panel) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-box {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 25px;
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: popUp 0.3s ease-out;
+        }
+        .modal-box h3 { color: #F94A23; font-size: 26px; margin: 0 0 15px 0; }
+        .modal-box p { color: #555; font-size: 16px; margin-bottom: 25px; line-height: 1.5; }
+        .modal-close-btn {
+            background: linear-gradient(135deg, #FF9A00, #F94A23);
+            color: white; border: none; padding: 12px 35px;
+            font-size: 16px; font-weight: 700; border-radius: 20px;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(249, 74, 35, 0.3);
+        }
+        @keyframes popUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Mobile Responsive View */
+        @media (max-width: 600px) {
+            .top-section { flex-direction: column; align-items: center; }
+            .card { width: 100%; max-width: 350px; }
+            .subject-btn { font-size: 16px; padding: 15px 20px; } 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="home-view">
+        <div class="top-section">
+            <div class="card card-blue">
+                <div>
+                    <div class="badge-transparent">✦ SYLLABUS</div>
+                    <div class="card-content" style="margin-top: 20px;">
+                        <p>All Semesters</p>
+                        <h1>Syllabus</h1>
+                    </div>
+                </div>
+                <button onclick="openPage('syllabus-view')" class="btn btn-white">Open Syllabus ></button>
+            </div>
+
+            <div class="card card-orange">
+                <div class="badge-yellow">🔥 IMPORTANT</div>
+                <div>
+                    <div class="badge-transparent">✦ OLD PAPERS</div>
+                    <div class="card-content" style="margin-top: 20px;">
+                        <p>Guaranteed</p>
+                        <h1>Papers</h1>
+                    </div>
+                </div>
+                <a href="#" class="btn btn-yellow">View Now ></a>
+            </div>
+        </div>
+
+        <div class="subjects-section">
+            <h2>📚 YOUR SUBJECTS </h2>
+            <div class="subjects-grid">
+                <button onclick="openPage('pht-view')" class="subject-btn subj-blue">Process Heat Transfer</button>
+                <button onclick="openPage('ffo-view')" class="subject-btn subj-orange">Fluid Flow Operation</button>
+                <button onclick="openPage('bpi-view')" class="subject-btn subj-blue">Basics of Process Instrumentations</button>
+                <button onclick="openPage('shm-view')" class="subject-btn subj-orange">Safety and Hazard Management</button>
+                <button onclick="openPage('pc-view')" class="subject-btn subj-blue">Process Calculation</button>
+                <button onclick="openPage('cpt-view')" class="subject-btn subj-orange">Chemical Process Technology - 1</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="syllabus-view" class="hidden">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <span onclick="openPage('home-view')" class="back-btn">← Back to Home</span>
+        </div>
+        <div class="info-card">
+            <h1>🎓 GTU Official Syllabus</h1>
+            <p>Welcome to the official syllabus portal! Ahia tamne tamara semester na badha j subjects no detailed ane <span class="highlight-text">latest GTU syllabus</span> mali jashe.</p>
+        </div>
+        <div class="subjects-section">
+            <h2>📚 Select Subject Syllabus</h2>
+            <div class="subjects-grid">
+                <a href="https://drive.google.com/file/d/12QIGv5Snk2ua-jvMlfeGvkGGMBwO6gJP/view?usp=drivesdk" target="_blank" class="subject-btn subj-blue">Process Heat Transfer</a>
+                <a href="https://drive.google.com/file/d/1HuLbn9qQTudN43HdtaKAPYcbFWwP-qZ5/view?usp=drivesdk" target="_blank" class="subject-btn subj-orange">Fluid Flow Operation</a>
+                <a href="https://drive.google.com/file/d/1OmZ_sibzLuIh3ti87YFSr0TCyO4asu4Q/view?usp=drivesdk" target="_blank" class="subject-btn subj-blue">Basics of Process Instrumentations</a>
+                <a href="https://drive.google.com/file/d/1lTBX-YhQyBdAgW55EqoTU8oI3LC-bbra/view?usp=drivesdk" target="_blank" class="subject-btn subj-orange">Safety and Hazard Management</a>
+                <a href="https://drive.google.com/file/d/1U2LVPvyonzPV8RQH0aFBzWXcoSEaiZZH/view?usp=drivesdk" target="_blank" class="subject-btn subj-blue">Process Calculation</a>
+                <a href="https://drive.google.com/file/d/176hxYrzKp3PEnAAyCTVqxRD0zXI0He12/view?usp=drivesdk" target="_blank" class="subject-btn subj-orange">Chemical Process Technology - 1</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="pht-view" class="hidden">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <span onclick="openPage('home-view')" class="back-btn">← Back to Home</span>
+        </div>
+        <div class="info-card">
+            <h1>🔥 Process Heat Transfer</h1>
+            <p>Welcome to the Process Heat Transfer hub! Ahia tamne subject na badha j important chapters ni <span class="highlight-text">high-quality PDFs</span> mali jashe.</p>
+        </div>
+        <div class="subjects-section">
+            <h2>📖 Select Chapter</h2>
+            <div class="subjects-grid">
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">1. Fundamental of Heat Transfer</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">2. Heat Transfer by Conduction</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">3. Heat Transfer by Convection</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">4. Heat Transfer by Thermal Radiation</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">5. Heat Transfer with Phase Change</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">6. Heat Exchangers</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">7. Evaporation</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="ffo-view" class="hidden">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <span onclick="openPage('home-view')" class="back-btn">← Back to Home</span>
+        </div>
+        <div class="info-card">
+            <h1>🌊 Fluid Flow Operation</h1>
+            <p>Welcome to the Fluid Flow Operation portal! Ahia tamne subject na badha j important chapters ni <span class="highlight-text">best notes ane PDFs</span> mali jashe.</p>
+        </div>
+        <div class="subjects-section">
+            <h2>📖 Select Chapter</h2>
+            <div class="subjects-grid">
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">1. Fluid Statics and its Applications</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">2. Fluid-Flow Phenomena</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">3. Basic Equations in Fluid Flow</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">4. Friction in Flowing Fluid</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">5. Transportation of Fluid</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">6. Flow Measurement</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">7. Fluidization</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="bpi-view" class="hidden">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <span onclick="openPage('home-view')" class="back-btn">← Back to Home</span>
+        </div>
+        <div class="info-card">
+            <h1>🎛️ Basics of Process Instrumentations</h1>
+            <p>Welcome to the Instrumentation Hub! Ahia tamne process instruments ane control systems na badha j important topics ni <span class="highlight-text">high-quality notes</span> mali jashe.</p>
+        </div>
+        <div class="subjects-section">
+            <h2>📖 Select Chapter</h2>
+            <div class="subjects-grid">
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">1. Introduction to Process Instrumentation</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">2. Temperature Measurement Devices</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">3. Pressure Measurement Devices</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">4. Level Measurement Devices</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">5. Fluid Properties Measurement</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">6. Basic Process Control</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="shm-view" class="hidden">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <span onclick="openPage('home-view')" class="back-btn">← Back to Home</span>
+        </div>
+        <div class="info-card">
+            <h1>🦺 Safety and Hazard Management</h1>
+            <p>Welcome to the Safety and Hazard Management portal! Ahia tamne industrial safety, risk assessment ane hazard control na badha j important topics ni <span class="highlight-text">best PDFs</span> mali jashe.</p>
+        </div>
+        <div class="subjects-section">
+            <h2>📖 Select Chapter</h2>
+            <div class="subjects-grid">
+                <a href="https://drive.google.com/file/d/1oR0u_WuPe48fDWSJPzLDScAZvfjePvFW/view?usp=drivesdk" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">1. Basic Concepts of Environment, Health & Safety</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">2. Indian and International Safety Standards</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">3. Hazard Control Methods in Chemical Industries</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">4. Hazard Identification and Risk Assessment Methods</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">5. Case Studies of Industrial Disasters</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="pc-view" class="hidden">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <span onclick="openPage('home-view')" class="back-btn">← Back to Home</span>
+        </div>
+        <div class="info-card">
+            <h1>🧮 Process Calculation</h1>
+            <p>Welcome to the Process Calculation portal! Ahia tamne material ane energy balance na badha j important topics ni <span class="highlight-text">best PDFs ane calculations</span> mali jashe.</p>
+        </div>
+        <div class="subjects-section">
+            <h2>📖 Select Chapter</h2>
+            <div class="subjects-grid">
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">1. Material Balance Without Chemical Reaction</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">2. Material Balance With Chemical Reaction</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">3. Concept of Recycle and Bypass</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">4. Energy Balance</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">5. Combustion</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="cpt-view" class="hidden">
+        <div style="max-width: 600px; margin: 0 auto;">
+            <span onclick="openPage('home-view')" class="back-btn">← Back to Home</span>
+        </div>
+        <div class="info-card">
+            <h1>🏭 Chemical Process Technology - 1</h1>
+            <p>Welcome to the CPT-1 portal! Ahia tamne industrial chemical manufacturing, processes ane technologies na <span class="highlight-text">best study materials</span> mali jashe.</p>
+            <p>Niche aapela chapters mathi select karo ane tamari exam ni tayari sharu karo!</p>
+        </div>
+        <div class="subjects-section">
+            <h2>📖 Select Chapter</h2>
+            <div class="subjects-grid">
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">1. Acid and Alkali</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">2. Cement and Lime</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">3. Coal and Coal Chemicals</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">4. Polymers</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-blue">5. Cyclic Intermediate and Dyes</a>
+                <a href="TAMARI_LINK_AHIA_PASTE_KARO" target="_blank" onclick="checkLink(event)" class="subject-btn subj-orange">6. Soap, Detergent and Glycerin</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="custom-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h3>⏳ Coming Soon!</h3>
+            <p>Aa chapter ni high-quality PDF ane notes thoda j samay ma ahia upload thai jase. Please thodo wait karo!</p>
+            <button class="modal-close-btn" onclick="closeModal()">OK, Got It</button>
+        </div>
+    </div>
+
+
+    <script>
+        function openPage(pageId) {
+            // Badha page hide karo
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('syllabus-view').classList.add('hidden');
+            document.getElementById('pht-view').classList.add('hidden');
+            document.getElementById('ffo-view').classList.add('hidden');
+            document.getElementById('bpi-view').classList.add('hidden');
+            document.getElementById('shm-view').classList.add('hidden');
+            document.getElementById('pc-view').classList.add('hidden');
+            document.getElementById('cpt-view').classList.add('hidden'); 
+            
+            // Je page id aavyu che ene j show karo
+            document.getElementById(pageId).classList.remove('hidden');
+            window.scrollTo(0, 0); 
+        }
+
+        // Custom Modal show karva mate
+        function checkLink(event) {
+            var link = event.currentTarget.getAttribute("href");
+            // Jo link 'TAMARI_LINK_AHIA_PASTE_KARO' hoy ke khali '#' hoy to error aapo
+            if(link === "TAMARI_LINK_AHIA_PASTE_KARO" || link === "#" || link === "") {
+                event.preventDefault(); 
+                document.getElementById('custom-modal').classList.remove('hidden');
+            }
+        }
+
+        // Modal close karva mate
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+    </script>
+
+</body>
+</html>
